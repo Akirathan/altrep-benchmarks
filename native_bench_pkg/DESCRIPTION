@@ -1,0 +1,10 @@
+Package: altrepbench
+Type: Package
+Title: Altrep native benchmarks
+Version: 1.0
+Date: 2019-01-8
+Author: FastR Tester
+Maintainer: FastR Tester <fastr@yahoogroups.com>
+Description: Altrep native benchmarks
+License: GPL-2
+NeedsCompilation: yes

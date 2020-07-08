@@ -1,0 +1,8 @@
+## package has a dynamic library
+useDynLib(altrepbench, .registration = TRUE, .fixes = "C_")
+
+export(
+    native_mem_vec.create_instance,
+    native_mem_vec.delete_instance,
+    generator_altvec.new
+)
