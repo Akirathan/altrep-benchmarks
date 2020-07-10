@@ -224,13 +224,7 @@ class AltrepBenchmarkSuite(StdOutBenchmarkSuite):
                 gnur_bin = str(self._gnur_dir.joinpath("bin", "R").absolute())
                 retcode = mx.run([gnur_bin] + self.run_args, out=output_capture, err=output_capture)
 
-        dims = {
-            "config.data-length": self._bench_args.data_length,
-            "config.warmup": self._bench_args.warmup,
-            "config.measure": self._bench_args.measure
-        }
-
-        return retcode, output_capture, dims
+        return retcode, output_capture, None
     
     def vmArgs(self, bmSuiteArgs: List[str]) -> List[str]:
         return self.vm_args
@@ -278,6 +272,10 @@ class AltrepBenchmarkSuite(StdOutBenchmarkSuite):
         datapoints.append({
             "vm": "fastr" if self._run_in_fastr else "gnur",
             "config.name": "core" if mx.suite("compiler", fatalIfMissing=False) else "default",
+            "config.data-length": self._bench_args.data_length,
+            "config.warmup": self._bench_args.warmup,
+            "config.measure": self._bench_args.measure,
+            "config.iterations": self._bench_args.iterations,
             "host-vm": host_vm,
             "host-vm-config": host_vm_config,
             "host-vm-backend": host_vm_backend,
