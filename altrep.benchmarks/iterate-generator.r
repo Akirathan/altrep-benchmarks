@@ -4,7 +4,9 @@ generator_func <- function(idx) {
 fn <- as.symbol("generator_func")
 instance <- generator_altvec.new(LEN, fn)
 
-iter_benchmark <- function(instance) {
+benchmark_func_args <- instance
+
+benchmark_func <- function(instance) {
     acc <- 0L
     len <- length(instance)
     for (i in 1:(len - 1L)) {
@@ -12,5 +14,3 @@ iter_benchmark <- function(instance) {
     }
     return (is.integer(acc))
 }
-
-benchmark(iter_benchmark, instance)
