@@ -103,6 +103,9 @@ class AltrepBenchmarkSuite(StdOutBenchmarkSuite):
     def subgroup(self):
         return "fastr"
     
+    def version(self):
+        return "2"
+    
     def benchmarkList(self, bmSuiteArgs: List[str]) -> List[str]:
         return [
             "iterate-native-mem-vec",
@@ -389,7 +392,7 @@ class AltrepBenchmarkSuite(StdOutBenchmarkSuite):
         subprocess.run(cmd, check=True, **kwargs)
 
 
-MAX_BENCH_ITERATIONS = int(1e7)
+MAX_BENCH_ITERATIONS = int(1e8)
 
 def generate_bench_runner_source(bench_args: AltrepBenchmarkSuite.BenchArgs, benchpath: Path) -> str:
     assert benchpath.exists()
