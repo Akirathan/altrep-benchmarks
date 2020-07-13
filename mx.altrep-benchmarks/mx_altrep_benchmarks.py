@@ -104,7 +104,7 @@ class AltrepBenchmarkSuite(StdOutBenchmarkSuite):
         return "fastr"
     
     def version(self):
-        return "2"
+        return "3"
     
     def benchmarkList(self, bmSuiteArgs: List[str]) -> List[str]:
         return [
@@ -402,6 +402,8 @@ def generate_bench_runner_source(bench_args: AltrepBenchmarkSuite.BenchArgs, ben
     return (
 f"stopifnot(require(altreprffitests, quietly=TRUE))\n"
 f"stopifnot(require(altrepbench, quietly=TRUE))\n"
+f"\n"
+f"set.seed(42)\n"
 f"\n"
 f"LEN <- as.integer({bench_args.data_length})\n"
 f"BASELINE_DATA <- as.integer(runif(LEN, min=1, max=100))\n"
