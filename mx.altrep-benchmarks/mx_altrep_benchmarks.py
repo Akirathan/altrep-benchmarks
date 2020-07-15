@@ -104,7 +104,7 @@ class AltrepBenchmarkSuite(StdOutBenchmarkSuite):
         return "fastr"
     
     def version(self):
-        return "3"
+        return "4"
     
     def benchmarkList(self, bmSuiteArgs: List[str]) -> List[str]:
         return [
@@ -406,10 +406,10 @@ f"\n"
 # bench_source contains a function that will be called in a cycle
 f"{bench_source}"
 f"\n"
-f"get_cur_seconds <- function() {{ proc.time()[3] }}\n"
+f"get_cur_seconds <- function() {{ proc.time()[[3L]] }}\n"
 f"\n"
-f"step <- 0\n"
-f"timestamps <- vector('integer', {MAX_BENCH_ITERATIONS})\n"
+f"step <- 0L\n"
+f"timestamps <- vector('double', {MAX_BENCH_ITERATIONS})\n"
 f"cur_seconds <- get_cur_seconds()\n"
 f"target_time <- {bench_args.warmup + bench_args.measure}\n"
 f"start_time <- cur_seconds\n"
@@ -419,8 +419,8 @@ f"  if (!benchmark_func(benchmark_func_args)) {{\n"
 f"    cat('ERROR: Wrong result\\n')\n"
 f"    return (0)\n"
 f"  }}\n"
-f"  timestamps[step] <- cur_seconds\n"
-f"  step <- step + 1\n"
+f"  timestamps[[step]] <- cur_seconds\n"
+f"  step <- step + 1L\n"
 f"  cur_seconds <- get_cur_seconds()\n"
 f"}}\n"
 f"\n"
