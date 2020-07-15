@@ -117,27 +117,21 @@ class AltrepBenchmarkSuite(StdOutBenchmarkSuite):
             "iterate-generator",
 
             "native-dataptr-before-native-mem-vec",
-            "native-dataptr-before-native-mem-vec-baseline",
             "native-dataptr-before-vec-wrapper",
-            "native-dataptr-before-vec-wrapper-baseline",
             "native-dataptr-before-vec-wrapper-elt",
-            "native-dataptr-before-vec-wrapper-elt-baseline",
+            "native-dataptr-before-baseline",
 
             "native-dataptr-inside-native-mem-vec",
-            "native-dataptr-inside-native-mem-vec-baseline",
             "native-dataptr-inside-vec-wrapper",
-            "native-dataptr-inside-vec-wrapper-baseline",
             "native-dataptr-inside-vec-wrapper-elt",
-            "native-dataptr-inside-vec-wrapper-elt-baseline",
+            "native-dataptr-inside-baseline",
 
             "native-iter-by-region-native-mem-vec",
-            "native-iter-by-region-native-mem-vec-baseline",
             "native-iter-by-region-vec-wrapper",
-            "native-iter-by-region-vec-wrapper-baseline",
             "native-iter-by-region-vec-wrapper-elt",
-            "native-iter-by-region-vec-wrapper-elt-baseline",
             "native-iter-by-region-vec-wrapper-get-region",
-            "native-iter-by-region-vec-wrapper-get-region-baseline",
+            "native-iter-by-region-baseline",
+
             "try"
         ]
 
