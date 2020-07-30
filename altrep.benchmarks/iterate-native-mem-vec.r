@@ -8,7 +8,6 @@ benchmark_func <- function(instance) {
     acc <- 0L
     len <- length(instance)
     for (i in 1:(len - 1L)) {
-        # Subscript should use BASELINE_DATAptr at some point.
         acc <- acc + instance[[i]] - instance[[i+1L]]
     }
     return (is.integer(acc))

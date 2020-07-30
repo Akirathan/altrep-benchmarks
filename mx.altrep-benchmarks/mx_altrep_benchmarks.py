@@ -11,9 +11,6 @@ import tempfile
 import numpy as np
 from statistics import geometric_mean
 
-# TODO: Remove
-DEBUG = True
-
 # Can be run only from FastR suite, cannot be run directly.
 
 _suite = mx.suite("altrep-benchmarks")
@@ -152,12 +149,9 @@ class AltrepBenchmarkSuite(StdOutBenchmarkSuite):
         # Find out library paths for FastR and GnuR
         rscript_args = ["-e", "cat(.libPaths()[1], '\\n')"]
 
-        if not DEBUG:
-            output_capture = OutputCapture()
-            _fastr_suite.extensions.do_run_r(rscript_args, "Rscript", nonZeroIsFatal=True, out=output_capture)
-            self._fastr_lib_path = Path(output_capture.line)
-        else:
-            self._fastr_lib_path = self._fastr_dir.joinpath("library")
+        output_capture = OutputCapture()
+        _fastr_suite.extensions.do_run_r(rscript_args, "Rscript", nonZeroIsFatal=True, out=output_capture)
+        self._fastr_lib_path = Path(output_capture.line)
         assert self._fastr_lib_path.exists()
 
         output_capture = OutputCapture()
