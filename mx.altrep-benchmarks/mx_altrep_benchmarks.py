@@ -81,6 +81,8 @@ class AltrepBenchmarkSuite(StdOutBenchmarkSuite):
         self.vm_args: List[str] = []
         self.run_args: List[str] = []
         self._fastr_dir: Path = None
+        self._fastr_lib_path: Path = None
+        self._gnur_lib_path: Path = None
         self._gnur_dir: Path = None
         self._native_pkg_bench_pkg_path: Path = None
         self._run_in_fastr = True
@@ -137,6 +139,26 @@ class AltrepBenchmarkSuite(StdOutBenchmarkSuite):
         assert self._fastr_dir.exists()
         assert self._gnur_dir.exists()
         assert self._native_pkg_bench_pkg_path.exists(), "Cannot find nativebench package"
+
+        class OutputCapture:
+            def __init__(self):
+                self.line = ""
+            def __call__(self, text):
+                self.line = text.rstrip()
+        
+        # Find out library paths for FastR and GnuR
+        rscript_args = ["-e", "cat(.libPaths()[1], '\\n')"]
+
+        output_capture = OutputCapture()
+        _fastr_suite.extensions.do_run_r(rscript_args, "Rscript", nonZeroIsFatal=True, out=output_capture)
+        self._fastr_lib_path = Path(output_capture.line)
+        assert self._fastr_lib_path.exists()
+
+        output_capture = OutputCapture()
+        gnur_rscript_bin = str(self._gnur_dir.joinpath("bin", "Rscript"))
+        mx.run([gnur_rscript_bin] + rscript_args, out=output_capture)
+        self._gnur_lib_path = Path(output_capture.line)
+        assert self._gnur_lib_path.exists()
 
         self._bench_args = self._parse_args(bmSuiteArgs)
         if self._bench_args.driver == AltrepBenchmarkSuite.Driver.FASTR:
@@ -315,9 +337,47 @@ class AltrepBenchmarkSuite(StdOutBenchmarkSuite):
         return AltrepBenchmarkSuite.BenchArgs(driver, args.length, args.iterations, args.baseline, args.warmup, args.measure)
 
     def _install_necessary_packages(self) -> None:
-        print("========================")
-        print(f"Make sure that altreprffitests and altrepbench packages are installed!!!!!")
-        print("========================")
+        if not self._is_package_installed("altreprffitests"):
+            pkg_path = \
+                self._fastr_dir.joinpath("com.oracle.truffle.r.test.native", "packages", "altreprffitests", "altreprffitests")
+            assert pkg_path.exists(), "Cannot find altreprffi package"
+            self._clean_package(pkg_path)
+            self._install_package(pkg_path)
+
+        if not self._is_package_installed("altrepbench"):
+            pkg_path = \
+                self._fastr_dir.joinpath("..", "altrep-benchmarks", "native_bench_pkg")
+            assert pkg_path.exists(), "Cannot find altrepbench package"
+            self._clean_package(pkg_path)
+            self._install_package(pkg_path)
+
+    def _is_package_installed(self, package: str) -> bool:
+        libdir = self._fastr_lib_path if self._run_in_fastr else self._gnur_lib_path
+        for installed_pkg in libdir.iterdir():
+            if installed_pkg.name == package:
+                return True
+        return False
+    
+    def _install_package(self, pkgpath: Path) -> None:
+        print(f"Installing package {pkgpath}")
+        pkg_abspath = str(pkgpath.resolve().absolute())
+        if self._run_in_fastr:
+            _fastr_suite.extensions.do_run_r(["CMD", "INSTALL", pkg_abspath], "R")
+        else:
+            gnur_bin = str(self._gnur_dir.joinpath("bin", "R").absolute())
+            self._run_with_check([gnur_bin, "CMD", "INSTALL", pkg_abspath])
+    
+    def _clean_package(self, pkgpath: Path) -> None:
+        print(f"Cleaning package in {pkgpath}")
+        src_dir = pkgpath.joinpath("src")
+        assert src_dir.exists()
+        for src_file in src_dir.iterdir():
+            if src_file.name.endswith(".o") or src_file.name.endswith(".so"):
+                src_file.unlink()
+
+    def _run_with_check(self, cmd: List[str], **kwargs) -> None:
+        print(f"Running {cmd}")
+        subprocess.run(cmd, check=True, **kwargs)
 
 
 MAX_BENCH_ITERATIONS = int(1e8)
