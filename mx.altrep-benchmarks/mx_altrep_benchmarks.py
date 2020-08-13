@@ -300,9 +300,9 @@ class AltrepBenchmarkSuite(StdOutBenchmarkSuite):
             help="Length of the data")
         argparser.add_argument("-b", "--baseline", action="store_true",
             help="Whether the baseline should also be run, default is run without baseline")
-        argparser.add_argument("-w", "--warmup", type=int,
+        argparser.add_argument("-w", "--warmup", type=int, default=100,
             help="Warmup time in seconds")
-        argparser.add_argument("-m", "--measure", type=int,
+        argparser.add_argument("-m", "--measure", type=int, default=20,
             help="Measure time in seconds")
         args = argparser.parse_args(bmSuiteArgs)
         driver = None
@@ -328,42 +328,42 @@ def generate_bench_runner_source(bench_args: AltrepBenchmarkSuite.BenchArgs, ben
     assert "benchmark_func" in bench_source
 
     return (
-f"stopifnot(require(altreprffitests, quietly=TRUE))\n"
-f"stopifnot(require(altrepbench, quietly=TRUE))\n"
-f"\n"
-f"set.seed(42)\n"
-f"\n"
-f"LEN <- as.integer({bench_args.data_length})\n"
-f"BASELINE_DATA <- as.integer(runif(LEN, min=1, max=100))\n"
-f"ITERATIONS <- as.integer({bench_args.iterations})\n"
-f"\n"
-# bench_source contains a function that will be called in a cycle
-f"{bench_source}"
-f"\n"
-f"get_cur_seconds <- function() {{ proc.time()[[3L]] }}\n"
-f"\n"
-f"step <- 1L\n"
-f"timestamps <- vector('double', {MAX_BENCH_ITERATIONS})\n"
-f"cur_seconds <- get_cur_seconds()\n"
-f"target_time <- {bench_args.warmup + bench_args.measure}\n"
-f"start_time <- cur_seconds\n"
-f"\n"
-f"while (cur_seconds - start_time < target_time) {{\n"
-f"  if (!benchmark_func(benchmark_func_args)) {{\n"
-f"    cat('ERROR: Wrong result\\n')\n"
-f"    return (0)\n"
-f"  }}\n"
-f"  timestamps[[step]] <- cur_seconds\n"
-f"  step <- step + 1L\n"
-f"  cur_seconds <- get_cur_seconds()\n"
-f"}}\n"
-f"\n"
-f"end_time <- get_cur_seconds()\n"
-f"\n"
-# Output of the benchmark
-f"cat('benchmark results:', '\\n')\n"
-f"cat(start_time, end_time, step - 1, '\\n')\n"
-f"cat(timestamps[1:length(timestamps) < step], sep='\\n')\n"
+        f"stopifnot(require(altreprffitests, quietly=TRUE))\n"
+        f"stopifnot(require(altrepbench, quietly=TRUE))\n"
+        f"\n"
+        f"set.seed(42)\n"
+        f"\n"
+        f"LEN <- as.integer({bench_args.data_length})\n"
+        f"BASELINE_DATA <- as.integer(runif(LEN, min=1, max=100))\n"
+        f"ITERATIONS <- as.integer({bench_args.iterations})\n"
+        f"\n"
+        # bench_source contains a function that will be called in a cycle
+        f"{bench_source}"
+        f"\n"
+        f"get_cur_seconds <- function() {{ proc.time()[[3L]] }}\n"
+        f"\n"
+        f"step <- 1L\n"
+        f"timestamps <- vector('double', {MAX_BENCH_ITERATIONS})\n"
+        f"cur_seconds <- get_cur_seconds()\n"
+        f"target_time <- {bench_args.warmup + bench_args.measure}\n"
+        f"start_time <- cur_seconds\n"
+        f"\n"
+        f"while (cur_seconds - start_time < target_time) {{\n"
+        f"  if (!benchmark_func(benchmark_func_args)) {{\n"
+        f"    cat('ERROR: Wrong result\\n')\n"
+        f"    return (0)\n"
+        f"  }}\n"
+        f"  timestamps[[step]] <- cur_seconds\n"
+        f"  step <- step + 1L\n"
+        f"  cur_seconds <- get_cur_seconds()\n"
+        f"}}\n"
+        f"\n"
+        f"end_time <- get_cur_seconds()\n"
+        f"\n"
+        # Output of the benchmark
+        f"cat('benchmark results:', '\\n')\n"
+        f"cat(start_time, end_time, step - 1, '\\n')\n"
+        f"cat(timestamps[1:length(timestamps) < step], sep='\\n')\n"
     )
 
 
