@@ -362,10 +362,10 @@ class AltrepBenchmarkSuite(StdOutBenchmarkSuite):
         print(f"Installing package {pkgpath}")
         pkg_abspath = str(pkgpath.resolve().absolute())
         if self._run_in_fastr:
-            _fastr_suite.extensions.do_run_r(["CMD", "INSTALL", pkg_abspath], "R")
+            r_bin = str(self._fastr_dir.joinpath("bin", "R").absolute())
         else:
-            gnur_bin = str(self._gnur_dir.joinpath("bin", "R").absolute())
-            self._run_with_check([gnur_bin, "CMD", "INSTALL", pkg_abspath])
+            r_bin = str(self._gnur_dir.joinpath("bin", "R").absolute())
+        self._run_with_check([r_bin, "CMD", "INSTALL", pkg_abspath])
     
     def _clean_package(self, pkgpath: Path) -> None:
         print(f"Cleaning package in {pkgpath}")
